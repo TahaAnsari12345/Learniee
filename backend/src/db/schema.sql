@@ -1,0 +1,20 @@
+CREATE TABLE IF NOT EXISTS users (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(120) NOT NULL,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password_hash TEXT NOT NULL,
+  role VARCHAR(20) NOT NULL DEFAULT 'parent',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE TABLE IF NOT EXISTS courses (
+  id SERIAL PRIMARY KEY,
+  course_name VARCHAR(160) NOT NULL,
+  description TEXT NOT NULL,
+  subject VARCHAR(80) NOT NULL,
+  grade INTEGER NOT NULL CHECK (grade BETWEEN 1 AND 12),
+  price NUMERIC(10,2) NOT NULL CHECK (price >= 0),
+  teacher_name VARCHAR(120) NOT NULL,
+  rating NUMERIC(2,1) NOT NULL CHECK (rating BETWEEN 0 AND 5),
+  image_url TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
