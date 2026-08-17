@@ -1,11 +1,110 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import api from '../services/api';
-import { useAuth } from '../context/AuthContext';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import api from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
 export default function ProfilePage() {
-  const { user, authenticate } = useAuth(); const [form, setForm] = useState({ name: user.name, currentPassword: '', newPassword: '', confirmPassword: '' }); const [message, setMessage] = useState(''); const [busy, setBusy] = useState(false);
-  const change = event => setForm(current => ({ ...current, [event.target.name]: event.target.value }));
-  async function submit(event) { event.preventDefault(); setMessage(''); if (form.newPassword && form.newPassword !== form.confirmPassword) return setMessage('New passwords do not match.'); setBusy(true); try { const payload = { name: form.name }; if (form.newPassword) Object.assign(payload, { currentPassword: form.currentPassword, newPassword: form.newPassword }); const { data } = await api.patch('/auth/profile', payload); authenticate({ token: localStorage.getItem('learniee_token'), user: data.user }); setForm(current => ({ ...current, currentPassword: '', newPassword: '', confirmPassword: '' })); setMessage('Account updated successfully.'); } catch (error) { setMessage(error.response?.data?.message || 'Unable to save changes.'); } finally { setBusy(false); } }
-  return <main className="profile-page"><Link className="back-link" to="/dashboard">← Back to courses</Link><form className="profile-form" onSubmit={submit}><div><p className="eyebrow">PARENT ACCOUNT</p><h1>Edit account</h1><p>Keep your details current. Your email address cannot be changed.</p></div><label>Name<input name="name" value={form.name} onChange={change} required /></label><label>Email address<input value={user.email} disabled /></label><hr/><label>Current password<input name="currentPassword" type="password" value={form.currentPassword} onChange={change} placeholder="Required only to change password" /></label><label>New password<input name="newPassword" type="password" value={form.newPassword} onChange={change} minLength="8" placeholder="At least 8 characters" /></label><label>Confirm new password<input name="confirmPassword" type="password" value={form.confirmPassword} onChange={change} placeholder="Repeat your new password" /></label>{message && <p className="form-message">{message}</p>}<button disabled={busy}>{busy ? 'Saving…' : 'Save changes'}</button></form></main>;
+  const { user, authenticate } = useAuth();
+  const [form, setForm] = useState({
+    name: user.name,
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [message, setMessage] = useState("");
+  const [busy, setBusy] = useState(false);
+  const change = (event) =>
+    setForm((current) => ({
+      ...current,
+      [event.target.name]: event.target.value,
+    }));
+  async function submit(event) {
+    event.preventDefault();
+    setMessage("");
+    if (form.newPassword && form.newPassword !== form.confirmPassword)
+      return setMessage("New passwords do not match.");
+    setBusy(true);
+    try {
+      const payload = { name: form.name };
+      if (form.newPassword)
+        Object.assign(payload, {
+          currentPassword: form.currentPassword,
+          newPassword: form.newPassword,
+        });
+      const { data } = await api.patch("/auth/profile", payload);
+      authenticate({
+        token: localStorage.getItem("learniee_token"),
+        user: data.user,
+      });
+      setForm((current) => ({
+        ...current,
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      }));
+      setMessage("Account updated successfully.");
+    } catch (error) {
+      setMessage(error.response?.data?.message || "Unable to save changes.");
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <main className="profile-page">
+      <Link className="back-link" to="/dashboard">
+        ← Back to courses
+      </Link>
+      <form className="profile-form" onSubmit={submit}>
+        <div>
+          <p className="eyebrow">PARENT ACCOUNT</p>
+          <h1>Edit account</h1>
+          <p>
+            Keep your details current. Your email address cannot be changed.
+          </p>
+        </div>
+        <label>
+          Name
+          <input name="name" value={form.name} onChange={change} required />
+        </label>
+        <label>
+          Email address
+          <input value={user.email} disabled />
+        </label>
+        <hr />
+        <label>
+          Current password
+          <input
+            name="currentPassword"
+            type="password"
+            value={form.currentPassword}
+            onChange={change}
+            placeholder="Required only to change password"
+          />
+        </label>
+        <label>
+          New password
+          <input
+            name="newPassword"
+            type="password"
+            value={form.newPassword}
+            onChange={change}
+            minLength="8"
+            placeholder="At least 8 characters"
+          />
+        </label>
+        <label>
+          Confirm new password
+          <input
+            name="confirmPassword"
+            type="password"
+            value={form.confirmPassword}
+            onChange={change}
+            placeholder="Repeat your new password"
+          />
+        </label>
+        {message && <p className="form-message">{message}</p>}
+        <button disabled={busy}>{busy ? "Saving…" : "Save changes"}</button>
+      </form>
+    </main>
+  );
 }
