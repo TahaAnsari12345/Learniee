@@ -1,1 +1,2 @@
-export const httpError = (status, message) => Object.assign(new Error(message), { status });
+export const httpError = (status, message) =>
+  Object.assign(new Error(message), { status });
